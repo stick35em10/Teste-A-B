@@ -1,5 +1,6 @@
 14.04.2025
-    git add . && git commit -m " add ``` ``` in Estrutura do Repositório at README.md " && git push origin main
+    git add . && git commit -m " remove duplicate struture of folder in README.md " && git push origin main
+    git add . && git commit -m " update 🔧 Pré-requisitos in README.md " && git push origin main
 
 13.04.2025
     git add . && git commit -m " update cmd.txt and README.md " && git push origin main

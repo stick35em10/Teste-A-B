@@ -15,57 +15,6 @@ Tomar decisões baseadas em dados para implementação
 📋 Estrutura do Repositório
 ```
 /teste_ab/
-|        
-|
-|       /data/                    # Dados brutos e processados
-|            
-|       │   ├── raw/                  # Dados originais   
-|       │   └── processed/            # Dados tratados
-
-
-|
-|
-
-|── /data/                    # Dados brutos e processado
-|    
-|     
-||── raw/                  # Dados originais
-
-|└── processed/            # Dados tratados
-
-
-│
-
-├── /notebooks/               # Jupyter notebooks de análise
-
-│   ├── 01_data_cleaning.ipynb
-
-│   └── 02_ab_test_analysis.ipynb
-
-│
-
-├── /src/                     # Código fonte
-
-│   ├── data_processing.py    # Scripts de limpeza
-
-│   └── ab_test.py            # Análise estatística
-
-│
-
-├── results/                  # Resultados e visualizações
-
-│   ├── plots/                # Gráficos
-
-│   └── ab_test_report.pdf    # Relatório final
-
-│
-
-├── requirements.txt          # Dependências do projeto
-
-└── README.md                 # Este arquivo
-
-
-/teste_ab/
 │
 |
 ├── /data/                    # Dados brutos e processados
@@ -86,12 +35,12 @@ Tomar decisões baseadas em dados para implementação
 │
 ├── requirements.txt          # Dependências do projeto
 └── README.md                 # Este arquivo
-
 ```
 
 🔧 Pré-requisitos
+```
 Python 3.8+
-
+```
 Bibliotecas listadas em requirements.txt
 
 bash
