@@ -13,7 +13,7 @@ Determinar estatisticamente qual versão performa melhor
 Tomar decisões baseadas em dados para implementação
 
 📋 Estrutura do Repositório
-
+```
 /teste_ab/
 |        
 |
@@ -86,6 +86,9 @@ Tomar decisões baseadas em dados para implementação
 │
 ├── requirements.txt          # Dependências do projeto
 └── README.md                 # Este arquivo
+
+```
+
 🔧 Pré-requisitos
 Python 3.8+
 
