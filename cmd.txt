@@ -1,10 +1,13 @@
 12.04.2025
-
-    jonel@DESKTOP-SO4SIUN:~/Teste-A-B$ 
+    12
+    nelca@DESKTOP-SO4SIUN:~/
         git clone git@github.com:stick35em10/Teste-A-B.git && cd Teste-A-B
-        mkdir -p data/raw data/processed
-        mkdir -p notebooks && touch notebooks/01_data_cleaning.ipynb && touch notebooks/02_ab_test_analysis.ipynb
-        mkdir src && mkdir -p results/plots
-        touch results/ab_test_report.pdf && touch cmd.txt
-        
-        git add . && git commit -m " update make a struture for my data scince projcet" && git push origin main
+        nelca@DESKTOP-SO4SIUN:~/Teste-A-B$
+            mkdir -p data/raw data/processed
+            mkdir -p notebooks && touch notebooks/01_data_cleaning.ipynb && touch notebooks/02_ab_test_analysis.ipynb
+            mkdir src && mkdir -p results/plots
+            touch results/ab_test_report.pdf && touch cmd.txt
+            
+            git add . && git commit -m " add cmd.txt" && git push origin main
+
+            git add . && git commit -m " update make a struture for my data scince projcet" && git push origin main
