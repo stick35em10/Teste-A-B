@@ -67,6 +67,7 @@ Tomar decisões baseadas em dados para implementação
 
 /teste_ab/
 │
+|
 ├── /data/                    # Dados brutos e processados
 │   ├── raw/                  # Dados originais
 │   └── processed/            # Dados tratados

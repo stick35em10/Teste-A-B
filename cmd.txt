@@ -1,3 +1,6 @@
+13.04.2025
+    git add . && git commit -m " update cmd.txt and README.md " && git push origin main
+    
 12.04.2025
     12
     nelca@DESKTOP-SO4SIUN:~/
