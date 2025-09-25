@@ -11,7 +11,7 @@ services:
     env: python
     plan: free
     region: ohio
-    branch: main
+    branch: dev_to_deploy #main
     
     # Configurações do Build
     buildCommand: |
@@ -70,18 +70,3 @@ services:
     region: ohio
     ipAllowList: []
     maxmemoryPolicy: allkeys-lru
-
-# 🔧 Configurações Globais
-global:
-  nodeVersion: 18
-  pythonVersion: 3.9.0
-
-# 📁 Estrutura de Arquivos Esperada
-hooks:
-  preBuild:
-    - echo "🚀 Iniciando build do Teste A/B..."
-    - python --version
-    - pip --version
-  postBuild:
-    - echo "✅ Build concluído com sucesso!"
-    - echo "📊 Versões instaladas:"
