@@ -16,7 +16,6 @@ services:
     # Configurações do Build
     buildCommand: |
       pip install -r requirements.txt
-      python -c "import nltk; nltk.download('punkt')"
       
     # Comando de Inicialização (Simplificado)
     startCommand: python app.py
