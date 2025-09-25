@@ -102,4 +102,3 @@ hooks:
     - echo "✅ Build concluído com sucesso!"
     - echo "📊 Versões instaladas:"
     - python -c "import pandas as pd; print(f'Pandas: {pd.__version__}')"
-    - python -c "import scipy; print(f'SciPy: {scipy.__version__}')"
