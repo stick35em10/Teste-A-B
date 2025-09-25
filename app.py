@@ -1,8 +1,12 @@
 from flask import Flask, render_template, request, jsonify
+from datetime import datetime
 import numpy as np
 from scipy import stats
 import math
 import json
+import requests
+import time
+from threading import Thread
 
 app = Flask(__name__)
 
@@ -40,7 +44,7 @@ def health_check():
         "service": "teste-ab-api",
         "timestamp": datetime.now().isoformat(),
         "version": "1.0.0"
-        })
+    })
 
 def keep_alive_thread():
     """Thread para manter o serviço ativo"""
@@ -52,13 +56,15 @@ def keep_alive_thread():
         except:
             time.sleep(60)
 
-# Iniciar thread quando o app iniciar
-@app.before_first_request
-def activate_keep_alive():
-    if not app.debug:  # Só em produção
-        thread = Thread(target=keep_alive_thread)
-        thread.daemon = True
-        thread.start()
+# Nova forma de inicializar threads no Flask 2.3+
+@app.before_request
+def before_first_request():
+    if not hasattr(app, 'keep_alive_started'):
+        app.keep_alive_started = True
+        if not app.debug:  # Só em produção
+            thread = Thread(target=keep_alive_thread)
+            thread.daemon = True
+            thread.start()
         
 @app.route('/api/analyze', methods=['POST'])
 def analyze_ab_test():
