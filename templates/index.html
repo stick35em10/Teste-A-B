@@ -1,72 +1,169 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Teste A/B - Análise Estatística</title>
+    <title>Teste A/B - Análise Estatística e Impacto Financeiro</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        .container { max-width: 800px; margin: 0 auto; }
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .form-group { margin: 15px 0; }
-        label { display: block; margin-bottom: 5px; }
-        input { padding: 8px; width: 200px; }
-        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
-        .result { margin-top: 20px; padding: 15px; border-radius: 5px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { padding: 8px; width: 200px; border: 1px solid #ddd; border-radius: 4px; }
+        button { padding: 12px 25px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        .result { margin-top: 20px; padding: 20px; border-radius: 5px; }
         .success { background: #d4edda; border: 1px solid #c3e6cb; }
         .error { background: #f8d7da; border: 1px solid #f5c6cb; }
+        .financial-impact { background: #e7f3ff; border: 1px solid #b3d9ff; margin-top: 20px; padding: 20px; border-radius: 5px; }
+        .financial-metric { display: inline-block; margin: 10px 20px 10px 0; padding: 10px; background: white; border-radius: 5px; min-width: 200px; }
+        .metric-value { font-size: 18px; font-weight: bold; color: #007bff; }
+        .section-title { color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px; margin-top: 30px; }
+        .tab { overflow: hidden; border: 1px solid #ccc; background-color: #f1f1f1; border-radius: 5px; }
+        .tab button { background-color: inherit; float: left; border: none; outline: none; cursor: pointer; padding: 14px 16px; transition: 0.3s; }
+        .tab button:hover { background-color: #ddd; }
+        .tab button.active { background-color: #007bff; color: white; }
+        .tabcontent { display: none; padding: 20px; border: 1px solid #ccc; border-top: none; border-radius: 0 0 5px 5px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📊 Teste A/B - Análise Estatística</h1>
+        <h1>📊 Teste A/B - Análise Estatística + 💡 Impacto Financeiro</h1>
         
-        <form id="abTestForm">
-            <div class="form-group">
-                <label>Controle - Tamanho da Amostra (n_control):</label>
-                <input type="number" name="n_control" value="4720" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Controle - Taxa de Conversão (conv_control):</label>
-                <input type="number" step="0.0001" name="conv_control" value="0.1155" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Tratamento - Tamanho da Amostra (n_treatment):</label>
-                <input type="number" name="n_treatment" value="4720" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Tratamento - Taxa de Conversão (conv_treatment):</label>
-                <input type="number" step="0.0001" name="conv_treatment" value="0.1290" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Nível de Significância (alpha):</label>
-                <input type="number" step="0.01" name="alpha" value="0.05" required>
-            </div>
-            
-            <button type="submit">Analisar Teste A/B</button>
-        </form>
+        <div class="tab">
+            <button class="tablinks active" onclick="openTab(event, 'AnalysisTab')">📈 Análise Estatística</button>
+            <button class="tablinks" onclick="openTab(event, 'FinancialTab')">💰 Impacto Financeiro</button>
+        </div>
+
+        <div id="AnalysisTab" class="tabcontent" style="display: block;">
+            <form id="abTestForm">
+                <h3>🎯 Parâmetros do Teste A/B</h3>
+                <div class="form-group">
+                    <label>Controle - Tamanho da Amostra (n_control):</label>
+                    <input type="number" name="n_control" value="4720" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Controle - Taxa de Conversão (conv_control):</label>
+                    <input type="number" step="0.0001" name="conv_control" value="0.1155" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Tratamento - Tamanho da Amostra (n_treatment):</label>
+                    <input type="number" name="n_treatment" value="4720" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Tratamento - Taxa de Conversão (conv_treatment):</label>
+                    <input type="number" step="0.0001" name="conv_treatment" value="0.1290" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Nível de Significância (alpha):</label>
+                    <input type="number" step="0.01" name="alpha" value="0.05" required>
+                </div>
+
+                <h3>💡 Parâmetros Financeiros</h3>
+                <div class="form-group">
+                    <label>Tráfego Mensal (usuários):</label>
+                    <input type="number" name="monthly_traffic" value="100000" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Valor por Conversão (R$):</label>
+                    <input type="number" step="0.01" name="conversion_value" value="50.00" required>
+                </div>
+                
+                <button type="submit">📊 Analisar Teste A/B + 💰 Impacto Financeiro</button>
+            </form>
+        </div>
+
+        <div id="FinancialTab" class="tabcontent">
+            <h3>💰 Calculadora de Impacto Financeiro</h3>
+            <form id="financialForm">
+                <div class="form-group">
+                    <label>Taxa de Conversão - Controle:</label>
+                    <input type="number" step="0.0001" name="conv_control" value="0.1155" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Taxa de Conversão - Tratamento:</label>
+                    <input type="number" step="0.0001" name="conv_treatment" value="0.1290" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Tráfego Mensal (usuários):</label>
+                    <input type="number" name="monthly_traffic" value="100000" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Valor por Conversão (R$):</label>
+                    <input type="number" step="0.01" name="conversion_value" value="50.00" required>
+                </div>
+                
+                <button type="submit">💰 Calcular Impacto Financeiro</button>
+            </form>
+        </div>
         
         <div id="result" class="result" style="display: none;"></div>
+        <div id="financialResult" class="financial-impact" style="display: none;"></div>
     </div>
 
     <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
         document.getElementById('abTestForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
-            const formData = new FormData(this);
+            await analyzeTest(this);
+        });
+
+        document.getElementById('financialForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            await calculateFinancialImpact(this);
+        });
+
+        async function analyzeTest(form) {
+            const formData = new FormData(form);
             const data = {
                 n_control: parseInt(formData.get('n_control')),
                 n_treatment: parseInt(formData.get('n_treatment')),
                 conv_control: parseFloat(formData.get('conv_control')),
                 conv_treatment: parseFloat(formData.get('conv_treatment')),
-                alpha: parseFloat(formData.get('alpha'))
+                alpha: parseFloat(formData.get('alpha')),
+                monthly_traffic: parseInt(formData.get('monthly_traffic')),
+                conversion_value: parseFloat(formData.get('conversion_value'))
             };
             
+            await makeRequest('/api/analyze', data, true);
+        }
+
+        async function calculateFinancialImpact(form) {
+            const formData = new FormData(form);
+            const data = {
+                conv_control: parseFloat(formData.get('conv_control')),
+                conv_treatment: parseFloat(formData.get('conv_treatment')),
+                monthly_traffic: parseInt(formData.get('monthly_traffic')),
+                conversion_value: parseFloat(formData.get('conversion_value'))
+            };
+            
+            await makeRequest('/api/financial-impact', data, false);
+        }
+
+        async function makeRequest(endpoint, data, showStatisticalResults) {
             try {
-                const response = await fetch('/api/analyze', {
+                const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -74,32 +171,77 @@
                 
                 const result = await response.json();
                 const resultDiv = document.getElementById('result');
+                const financialDiv = document.getElementById('financialResult');
                 
                 if (result.success) {
-                    const r = result.result;
-                    resultDiv.innerHTML = `
-                        <h3>📈 Resultado da Análise</h3>
-                        <p><strong>Estatística Z:</strong> ${r.z_statistic}</p>
-                        <p><strong>Valor-p:</strong> ${r.p_value}</p>
-                        <p><strong>Significativo:</strong> ${r.significant ? '✅ SIM' : '❌ NÃO'}</p>
-                        <p><strong>Intervalo de Confiança:</strong> [${r.confidence_interval[0]}, ${r.confidence_interval[1]}]</p>
-                        <p><strong>Melhoria na Conversão:</strong> ${r.conversion_improvement}%</p>
-                        <p><strong>Recomendação:</strong> <strong>${r.recommendation}</strong></p>
-                    `;
-                    resultDiv.className = 'result success';
+                    if (showStatisticalResults && result.result) {
+                        const r = result.result;
+                        resultDiv.innerHTML = `
+                            <h3>📈 Resultado da Análise Estatística</h3>
+                            <p><strong>Estatística Z:</strong> ${r.z_statistic}</p>
+                            <p><strong>Valor-p:</strong> ${r.p_value}</p>
+                            <p><strong>Significativo:</strong> ${r.significant ? '✅ SIM' : '❌ NÃO'}</p>
+                            <p><strong>Intervalo de Confiança:</strong> [${r.confidence_interval[0]}, ${r.confidence_interval[1]}]</p>
+                            <p><strong>Melhoria na Conversão:</strong> ${r.conversion_improvement}%</p>
+                            <p><strong>Recomendação:</strong> <strong>${r.recommendation}</strong></p>
+                        `;
+                        resultDiv.className = 'result success';
+                        resultDiv.style.display = 'block';
+                    }
+                    
+                    if (result.financial_impact) {
+                        const f = result.financial_impact;
+                        financialDiv.innerHTML = `
+                            <h3>💡 Impacto Financeiro</h3>
+                            <div class="financial-metric">
+                                <div>📊 Tráfego Mensal</div>
+                                <div class="metric-value">${f.monthly_traffic.toLocaleString()} usuários</div>
+                            </div>
+                            <div class="financial-metric">
+                                <div>💰 Valor por Conversão</div>
+                                <div class="metric-value">R$ ${f.conversion_value.toFixed(2)}</div>
+                            </div>
+                            <div class="financial-metric">
+                                <div>📈 Conversões Atuais/Mês</div>
+                                <div class="metric-value">${f.current_monthly_conversions.toLocaleString()}</div>
+                            </div>
+                            <div class="financial-metric">
+                                <div>🚀 Conversões Esperadas/Mês</div>
+                                <div class="metric-value">${f.expected_monthly_conversions.toLocaleString()}</div>
+                            </div>
+                            <div class="financial-metric">
+                                <div>⭐ Conversões Adicionais</div>
+                                <div class="metric-value" style="color: #28a745;">+${f.additional_conversions.toLocaleString()}</div>
+                            </div>
+                            <div class="financial-metric">
+                                <div>💵 Ganho Mensal</div>
+                                <div class="metric-value" style="color: #28a745;">R$ ${f.monthly_revenue_gain.toLocaleString()}</div>
+                            </div>
+                            <div class="financial-metric">
+                                <div>📅 Ganho Anual</div>
+                                <div class="metric-value" style="color: #28a745;">R$ ${f.annual_revenue_gain.toLocaleString()}</div>
+                            </div>
+                            <div class="financial-metric">
+                                <div>📊 Melhoria</div>
+                                <div class="metric-value" style="color: #28a745;">+${f.improvement_percentage}%</div>
+                            </div>
+                        `;
+                        financialDiv.style.display = 'block';
+                    }
                 } else {
                     resultDiv.innerHTML = `<strong>Erro:</strong> ${result.error}`;
                     resultDiv.className = 'result error';
+                    resultDiv.style.display = 'block';
+                    financialDiv.style.display = 'none';
                 }
-                
-                resultDiv.style.display = 'block';
             } catch (error) {
                 const resultDiv = document.getElementById('result');
                 resultDiv.innerHTML = `<strong>Erro de conexão:</strong> ${error.message}`;
                 resultDiv.className = 'result error';
                 resultDiv.style.display = 'block';
+                document.getElementById('financialResult').style.display = 'none';
             }
-        });
+        }
     </script>
 </body>
 </html>

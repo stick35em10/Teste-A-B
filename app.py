@@ -4,9 +4,6 @@ import numpy as np
 from scipy import stats
 import math
 import json
-import requests
-import time
-from threading import Thread
 
 app = Flask(__name__)
 
@@ -46,26 +43,6 @@ def health_check():
         "version": "1.0.0"
     })
 
-def keep_alive_thread():
-    """Thread para manter o serviço ativo"""
-    while True:
-        try:
-            # Faz uma requisição para si mesmo a cada 10 minutos
-            requests.get('https://teste-ab-dashboard.onrender.com/health', timeout=10)
-            time.sleep(600)  # 10 minutos
-        except:
-            time.sleep(60)
-
-# Nova forma de inicializar threads no Flask 2.3+
-@app.before_request
-def before_first_request():
-    if not hasattr(app, 'keep_alive_started'):
-        app.keep_alive_started = True
-        if not app.debug:  # Só em produção
-            thread = Thread(target=keep_alive_thread)
-            thread.daemon = True
-            thread.start()
-        
 @app.route('/api/analyze', methods=['POST'])
 def analyze_ab_test():
     """
@@ -94,6 +71,10 @@ def analyze_ab_test():
         conv_treatment = float(data.get('conv_treatment', 0.1290))
         alpha = float(data.get('alpha', 0.05))
         
+        # Novos parâmetros de impacto financeiro
+        monthly_traffic = int(data.get('monthly_traffic', 100000))
+        conversion_value = float(data.get('conversion_value', 50.0))
+        
         # Validações básicas
         if n_control <= 0 or n_treatment <= 0:
             return jsonify({
@@ -113,12 +94,33 @@ def analyze_ab_test():
                 "error": "Alpha deve estar entre 0 e 1"
             }), 400
         
+        if monthly_traffic <= 0:
+            return jsonify({
+                "success": False,
+                "error": "Tráfego mensal deve ser maior que 0"
+            }), 400
+        
+        if conversion_value <= 0:
+            return jsonify({
+                "success": False,
+                "error": "Valor por conversão deve ser maior que 0"
+            }), 400
+        
         # Realizar análise
         resultado = realizar_analise_ab(n_control, n_treatment, conv_control, conv_treatment, alpha)
         
+        # Calcular impacto financeiro
+        impacto_financeiro = calcular_impacto_financeiro(
+            conv_control, 
+            conv_treatment, 
+            monthly_traffic, 
+            conversion_value
+        )
+        
         return jsonify({
             "success": True,
-            "result": resultado
+            "result": resultado,
+            "financial_impact": impacto_financeiro
         })
         
     except Exception as e:
@@ -172,6 +174,69 @@ def realizar_analise_ab(n_control, n_treatment, conv_control, conv_treatment, al
     
     except Exception as e:
         raise ValueError(f"Erro no cálculo estatístico: {str(e)}")
+
+def calcular_impacto_financeiro(conv_control, conv_treatment, monthly_traffic, conversion_value):
+    """
+    Calcula o impacto financeiro da implementação
+    """
+    try:
+        # Cálculo das conversões
+        conversoes_control_mensal = monthly_traffic * conv_control
+        conversoes_treatment_mensal = monthly_traffic * conv_treatment
+        
+        # Diferença esperada
+        conversoes_adicionais = conversoes_treatment_mensal - conversoes_control_mensal
+        
+        # Impacto financeiro
+        ganho_mensal = conversoes_adicionais * conversion_value
+        ganho_anual = ganho_mensal * 12
+        
+        # ROI aproximado (considerando custo zero para simplificar)
+        roi_mensal = (ganho_mensal / (monthly_traffic * 0.01)) * 100 if monthly_traffic > 0 else 0  # ROI simplificado
+        
+        return {
+            "monthly_traffic": monthly_traffic,
+            "conversion_value": conversion_value,
+            "current_monthly_conversions": round(conversoes_control_mensal),
+            "expected_monthly_conversions": round(conversoes_treatment_mensal),
+            "additional_conversions": round(conversoes_adicionais),
+            "monthly_revenue_gain": round(ganho_mensal, 2),
+            "annual_revenue_gain": round(ganho_anual, 2),
+            "improvement_percentage": round(((conv_treatment/conv_control)-1)*100, 2) if conv_control > 0 else 0,
+            "roi_estimate": round(roi_mensal, 2)
+        }
+    
+    except Exception as e:
+        raise ValueError(f"Erro no cálculo financeiro: {str(e)}")
+
+@app.route('/api/financial-impact', methods=['POST'])
+def financial_impact_only():
+    """
+    Endpoint específico para cálculo de impacto financeiro
+    """
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({"success": False, "error": "No JSON data provided"}), 400
+        
+        conv_control = float(data.get('conv_control', 0.1155))
+        conv_treatment = float(data.get('conv_treatment', 0.1290))
+        monthly_traffic = int(data.get('monthly_traffic', 100000))
+        conversion_value = float(data.get('conversion_value', 50.0))
+        
+        impacto = calcular_impacto_financeiro(conv_control, conv_treatment, monthly_traffic, conversion_value)
+        
+        return jsonify({
+            "success": True,
+            "financial_impact": impacto
+        })
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": f"Erro no cálculo financeiro: {str(e)}"
+        }), 500
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0', port=5000)
