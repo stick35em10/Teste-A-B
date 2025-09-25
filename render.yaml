@@ -1,0 +1,106 @@
+# Render Configuration File
+# Deploy: Teste A/B - Análise Estatística
+# Platform: Web Service + Cron Jobs
+
+version: '1'
+
+services:
+  # 🎯 Serviço Web Principal (Dashboard)
+  - type: web
+    name: teste-ab-dashboard
+    env: python
+    plan: free
+    region: ohio
+    branch: main
+    
+    # Configurações do Build
+    buildCommand: |
+      pip install -r requirements.txt
+      python -c "import nltk; nltk.download('punkt')"
+      
+    # Comando de Inicialização
+    startCommand: |
+      if [ -f "app.py" ]; then
+        gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+      elif [ -f "main.py" ]; then
+        gunicorn main:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+      else
+        streamlit run streamlit_app.py --server.port $PORT --server.address 0.0.0.0
+      fi
+    
+    # Variáveis de Ambiente
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.0
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: false
+      - key: SECRET_KEY
+        generateValue: true
+    
+    # Health Check
+    healthCheckPath: /health
+    autoDeploy: true
+    
+    # Escalabilidade
+    numInstances: 1
+    disk:
+      name: data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1
+
+  # 📊 Serviço de Background (Processamento de Dados)
+  - type: worker
+    name: teste-ab-worker
+    env: python
+    plan: free
+    region: ohio
+    branch: main
+    
+    buildCommand: pip install -r requirements.txt
+    startCommand: python worker.py
+    
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.0
+      - key: WORKER_TYPE
+        value: data_processing
+    
+    # Agendamento (opcional)
+    # schedule: "0 */6 * * *"  # Executa a cada 6 horas
+
+  # 🗃️ Banco de Dados PostgreSQL (Opcional)
+  - type: pgsql
+    name: teste-ab-db
+    plan: free
+    region: ohio
+    ipAllowList: []
+    databaseName: teste_ab
+    user: teste_ab_user
+
+  # 📈 Serviço de Redis (Cache)
+  - type: redis
+    name: teste-ab-cache
+    plan: free
+    region: ohio
+    ipAllowList: []
+    maxmemoryPolicy: allkeys-lru
+
+# 🔧 Configurações Globais
+global:
+  nodeVersion: 18
+  pythonVersion: 3.9.0
+
+# 📁 Estrutura de Arquivos Esperada
+hooks:
+  preBuild:
+    - echo "🚀 Iniciando build do Teste A/B..."
+    - python --version
+    - pip --version
+  postBuild:
+    - echo "✅ Build concluído com sucesso!"
+    - echo "📊 Versões instaladas:"
+    - python -c "import pandas as pd; print(f'Pandas: {pd.__version__}')"
+    - python -c "import numpy as np; print(f'NumPy: {np.__version__}')"
+    - python -c "import scipy; print(f'SciPy: {scipy.__version__}')"
