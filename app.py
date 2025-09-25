@@ -109,7 +109,7 @@ def realizar_analise_ab(n_control, n_treatment, conv_control, conv_treatment, al
         z_stat = diff / se if se != 0 else 0
         
         # Converter resultado do scipy para tipo Python nativo
-        p_value = float(2 * (1 - stats.norm.cdf(abs(z_stat))) if se != 0 else 1.0
+        p_value = float(2 * (1 - stats.norm.cdf(abs(z_stat)))) if se != 0 else 1.0
         
         # Intervalo de confiança
         z_value = float(stats.norm.ppf(1 - alpha/2))
