@@ -5,7 +5,18 @@ from scipy import stats
 import math
 import json
 
+import io
+import base64
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')  # Para evitar problemas em produção
+import seaborn as sns
+
 app = Flask(__name__)
+
+# Configuração do estilo dos gráficos
+plt.style.use('seaborn-v0_8')
+sns.set_palette("husl")
 
 # Custom JSON encoder para lidar com tipos NumPy
 class NumpyEncoder(json.JSONEncoder):
@@ -42,6 +53,198 @@ def health_check():
         "timestamp": datetime.now().isoformat(),
         "version": "1.0.0"
     })
+
+def create_conversion_comparison_chart(conv_control, conv_treatment, monthly_traffic):
+    """Cria gráfico de comparação de conversões"""
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+    
+    # Gráfico 1: Taxas de conversão
+    labels = ['Controle', 'Tratamento']
+    conversion_rates = [conv_control * 100, conv_treatment * 100]
+    colors = ['#ff6b6b', '#51cf66']
+    
+    bars = ax1.bar(labels, conversion_rates, color=colors, alpha=0.8)
+    ax1.set_ylabel('Taxa de Conversão (%)')
+    ax1.set_title('Comparação de Taxas de Conversão')
+    ax1.grid(True, alpha=0.3)
+    
+    # Adicionar valores nas barras
+    for bar, rate in zip(bars, conversion_rates):
+        height = bar.get_height()
+        ax1.text(bar.get_x() + bar.get_width()/2., height + 0.1,
+                f'{rate:.2f}%', ha='center', va='bottom', fontweight='bold')
+    
+    # Gráfico 2: Conversões mensais
+    conversions_control = monthly_traffic * conv_control
+    conversions_treatment = monthly_traffic * conv_treatment
+    additional_conversions = conversions_treatment - conversions_control
+    
+    conversions_data = [conversions_control, conversions_treatment, additional_conversions]
+    conversion_labels = ['Conversões\nAtuais', 'Conversões\nEsperadas', 'Conversões\nAdicionais']
+    conversion_colors = ['#ff6b6b', '#51cf66', '#339af0']
+    
+    bars2 = ax2.bar(conversion_labels, conversions_data, color=conversion_colors, alpha=0.8)
+    ax2.set_ylabel('Número de Conversões')
+    ax2.set_title('Impacto nas Conversões Mensais')
+    ax2.grid(True, alpha=0.3)
+    
+    # Formatar eixos Y para milhares
+    ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x/1000:.0f}K'))
+    
+    for bar, value in zip(bars2, conversions_data):
+        height = bar.get_height()
+        ax2.text(bar.get_x() + bar.get_width()/2., height + 100,
+                f'{value:,.0f}', ha='center', va='bottom', fontweight='bold')
+    
+    plt.tight_layout()
+    
+    # Converter para base64
+    img = io.BytesIO()
+    plt.savefig(img, format='png', dpi=100, bbox_inches='tight')
+    img.seek(0)
+    plt.close()
+    
+    return base64.b64encode(img.getvalue()).decode()
+
+def create_revenue_chart(monthly_revenue_gain, annual_revenue_gain):
+    """Cria gráfico de impacto na receita"""
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+    
+    # Gráfico 1: Receita mensal
+    months = ['Mensal', 'Anual']
+    revenue = [monthly_revenue_gain, annual_revenue_gain]
+    colors = ['#74c0fc', '#339af0']
+    
+    bars = ax1.bar(months, revenue, color=colors, alpha=0.8)
+    ax1.set_ylabel('Receita Adicional (R$)')
+    ax1.set_title('Impacto na Receita')
+    ax1.grid(True, alpha=0.3)
+    
+    # Formatar eixos Y para milhares
+    ax1.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'R$ {x/1000:.0f}K'))
+    
+    for bar, value in zip(bars, revenue):
+        height = bar.get_height()
+        ax1.text(bar.get_x() + bar.get_width()/2., height + 1000,
+                f'R$ {value:,.0f}', ha='center', va='bottom', fontweight='bold')
+    
+    # Gráfico 2: Projeção anual
+    months_projection = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 
+                        'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+    cumulative_revenue = [monthly_revenue_gain * (i+1) for i in range(12)]
+    
+    ax2.plot(months_projection, cumulative_revenue, marker='o', linewidth=2, 
+             color='#ff922b', markersize=6)
+    ax2.fill_between(months_projection, cumulative_revenue, alpha=0.3, color='#ffd8a8')
+    ax2.set_ylabel('Receita Acumulada (R$)')
+    ax2.set_title('Projeção de Receita Anual')
+    ax2.grid(True, alpha=0.3)
+    ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'R$ {x/1000:.0f}K'))
+    
+    # Adicionar valor no último ponto
+    ax2.annotate(f'R$ {cumulative_revenue[-1]:,.0f}', 
+                xy=(11, cumulative_revenue[-1]), 
+                xytext=(8, cumulative_revenue[-1] * 0.8),
+                arrowprops=dict(arrowstyle='->', color='#ff922b'),
+                fontweight='bold')
+    
+    plt.tight_layout()
+    
+    # Converter para base64
+    img = io.BytesIO()
+    plt.savefig(img, format='png', dpi=100, bbox_inches='tight')
+    img.seek(0)
+    plt.close()
+    
+    return base64.b64encode(img.getvalue()).decode()
+
+def create_roi_chart(monthly_revenue_gain, monthly_traffic, conversion_value):
+    """Cria gráfico de ROI e sensibilidade"""
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+    
+    # Gráfico 1: ROI por valor de conversão
+    conversion_values = np.linspace(conversion_value * 0.5, conversion_value * 1.5, 10)
+    roi_values = [(monthly_revenue_gain / (monthly_traffic * 0.01)) * 100 for _ in conversion_values]
+    
+    ax1.plot(conversion_values, roi_values, marker='o', linewidth=2, color='#cc5de8')
+    ax1.set_xlabel('Valor por Conversão (R$)')
+    ax1.set_ylabel('ROI Estimado (%)')
+    ax1.set_title('Sensibilidade do ROI')
+    ax1.grid(True, alpha=0.3)
+    
+    # Destacar ponto atual
+    current_roi = (monthly_revenue_gain / (monthly_traffic * 0.01)) * 100
+    ax1.axvline(x=conversion_value, color='red', linestyle='--', alpha=0.7)
+    ax1.annotate(f'ROI Atual: {current_roi:.1f}%', 
+                xy=(conversion_value, current_roi),
+                xytext=(conversion_value * 1.1, current_roi * 1.1),
+                arrowprops=dict(arrowstyle='->', color='red'))
+    
+    # Gráfico 2: Impacto no tráfego
+    traffic_scenarios = [monthly_traffic * 0.5, monthly_traffic, monthly_traffic * 1.5, monthly_traffic * 2]
+    revenue_scenarios = [monthly_revenue_gain * factor for factor in [0.5, 1, 1.5, 2]]
+    
+    bars = ax2.bar([f'{t/1000:.0f}K' for t in traffic_scenarios], revenue_scenarios, 
+                   color=['#ffa8a8', '#ff6b6b', '#fa5252', '#e03131'], alpha=0.8)
+    ax2.set_xlabel('Tráfego Mensal')
+    ax2.set_ylabel('Receita Adicional (R$)')
+    ax2.set_title('Impacto do Volume de Tráfego')
+    ax2.grid(True, alpha=0.3)
+    ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'R$ {x/1000:.0f}K'))
+    
+    for bar, value in zip(bars, revenue_scenarios):
+        height = bar.get_height()
+        ax2.text(bar.get_x() + bar.get_width()/2., height + 1000,
+                f'R$ {value:,.0f}', ha='center', va='bottom', fontsize=8)
+    
+    plt.tight_layout()
+    
+    # Converter para base64
+    img = io.BytesIO()
+    plt.savefig(img, format='png', dpi=100, bbox_inches='tight')
+    img.seek(0)
+    plt.close()
+    
+    return base64.b64encode(img.getvalue()).decode()
+
+@app.route('/api/generate-charts', methods=['POST'])
+def generate_charts():
+    """Endpoint para gerar todos os gráficos"""
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({"success": False, "error": "No JSON data provided"}), 400
+        
+        conv_control = float(data.get('conv_control', 0.1155))
+        conv_treatment = float(data.get('conv_treatment', 0.1290))
+        monthly_traffic = int(data.get('monthly_traffic', 100000))
+        conversion_value = float(data.get('conversion_value', 50.0))
+        
+        # Calcular métricas para os gráficos
+        monthly_revenue_gain = monthly_traffic * (conv_treatment - conv_control) * conversion_value
+        annual_revenue_gain = monthly_revenue_gain * 12
+        
+        # Gerar gráficos
+        conversion_chart = create_conversion_comparison_chart(conv_control, conv_treatment, monthly_traffic)
+        revenue_chart = create_revenue_chart(monthly_revenue_gain, annual_revenue_gain)
+        roi_chart = create_roi_chart(monthly_revenue_gain, monthly_traffic, conversion_value)
+        
+        return jsonify({
+            "success": True,
+            "charts": {
+                "conversion_comparison": conversion_chart,
+                "revenue_impact": revenue_chart,
+                "roi_analysis": roi_chart
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": f"Erro na geração de gráficos: {str(e)}"
+        }), 500
+
 
 @app.route('/api/analyze', methods=['POST'])
 def analyze_ab_test():
