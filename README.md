@@ -1,4 +1,47 @@
-# 📊 Teste A/B: Análise de Conversão entre Páginas Antiga e Nova
+# 🚀 Implementação de Teste A/B em Produção
+# 📋 Arquitetura do Sistema
+
+    teste-ab-production/
+    │
+    ├── api/                          # 🏗️ API para gerenciamento de testes
+    │   ├── app.py                   # FastAPI/FastAPI application
+    │   ├── endpoints/               # Endpoints da API
+    │   │   ├── experiments.py       # Gerenciar experimentos
+    │   │   ├── assignments.py       # Atribuição de usuários
+    │   │   └── results.py           # Resultados e análises
+    │   └── models/                  # Modelos de dados
+    │
+    ├── core/                        # 🧠 Lógica de negócio
+    │   ├── experiment_manager.py    # Gerenciador de experimentos
+    │   ├── assignment_engine.py     # Motor de atribuição
+    │   ├── statistical_engine.py    # Motor estatístico
+    │   └── data_processor.py        # Processamento de dados
+    │
+    ├── database/                    # 🗄️ Camada de dados
+    │   ├── models.py               # Modelos SQLAlchemy
+    │   ├── crud.py                 # Operações CRUD
+    │   └── migrations/             # Migrações de banco
+    │
+    ├── monitoring/                  # 📊 Monitoramento
+    │   ├── metrics.py              # Coleta de métricas
+    │   ├── alerts.py               # Sistema de alertas
+    │   └── dashboard.py            # Dashboard em tempo real
+    │
+    ├── frontend/                    # 🎨 Interface web (opcional)
+    │   ├── src/
+    │   └── public/
+    │
+    ├── tests/                       # 🧪 Testes
+    │   ├── unit/
+    │   ├── integration/
+    │   └── e2e/
+    │
+    └── deployment/                  # 🐳 Configuração de deploy
+        ├── Dockerfile
+        ├── docker-compose.yml
+        └── kubernetes/
+#   📊 Teste A/B: Análise de Conversão entre Páginas Antiga e Nova
+
 Este repositório contém um notebook (teste_AB.ipynb) que realiza um teste A/B para comparar a taxa de conversão entre duas versões de uma página: a página antiga (controle) e a página nova (tratamento).
 
 # 🧪 Passo 1: Definir o Problema de Negócio
