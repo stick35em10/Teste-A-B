@@ -2,8 +2,24 @@ from flask import Flask, render_template, request, jsonify
 import numpy as np
 from scipy import stats
 import math
+import json
 
 app = Flask(__name__)
+
+# Custom JSON encoder para lidar com tipos NumPy
+class NumpyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, (np.integer, np.int64, np.int32)):
+            return int(obj)
+        elif isinstance(obj, (np.floating, np.float64, np.float32)):
+            return float(obj)
+        elif isinstance(obj, np.bool_):
+            return bool(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return super(NumpyEncoder, self).default(obj)
+
+app.json_encoder = NumpyEncoder
 
 @app.route('/')
 def index():
@@ -34,12 +50,12 @@ def analyze_ab_test():
                 "error": "No JSON data provided"
             }), 400
         
-        # Validação dos parâmetros
-        n_control = data.get('n_control', 4720)
-        n_treatment = data.get('n_treatment', 4720)
-        conv_control = data.get('conv_control', 0.1155)
-        conv_treatment = data.get('conv_treatment', 0.1290)
-        alpha = data.get('alpha', 0.05)
+        # Validação dos parâmetros (convertendo para tipos Python nativos)
+        n_control = int(data.get('n_control', 4720))
+        n_treatment = int(data.get('n_treatment', 4720))
+        conv_control = float(data.get('conv_control', 0.1155))
+        conv_treatment = float(data.get('conv_treatment', 0.1290))
+        alpha = float(data.get('alpha', 0.05))
         
         # Validações básicas
         if n_control <= 0 or n_treatment <= 0:
@@ -79,7 +95,7 @@ def realizar_analise_ab(n_control, n_treatment, conv_control, conv_treatment, al
     Função principal de análise A/B
     """
     try:
-        # Cálculo do teste Z
+        # Cálculo do teste Z - usando math em vez de numpy quando possível
         conversoes_control = int(n_control * conv_control)
         conversoes_treatment = int(n_treatment * conv_treatment)
         
@@ -91,25 +107,30 @@ def realizar_analise_ab(n_control, n_treatment, conv_control, conv_treatment, al
         se = math.sqrt(p_pool * (1 - p_pool) * (1/n_control + 1/n_treatment))
         diff = conv_treatment - conv_control
         z_stat = diff / se if se != 0 else 0
-        p_value = 2 * (1 - stats.norm.cdf(abs(z_stat))) if se != 0 else 1.0
+        
+        # Converter resultado do scipy para tipo Python nativo
+        p_value = float(2 * (1 - stats.norm.cdf(abs(z_stat))) if se != 0 else 1.0
         
         # Intervalo de confiança
-        z_value = stats.norm.ppf(1 - alpha/2)
+        z_value = float(stats.norm.ppf(1 - alpha/2))
         margem_erro = z_value * se
-        ic_inferior = diff - margem_erro
-        ic_superior = diff + margem_erro
+        ic_inferior = float(diff - margem_erro)
+        ic_superior = float(diff + margem_erro)
         
         # Cálculo da melhoria (evitar divisão por zero)
-        improvement = ((conv_treatment/conv_control)-1)*100 if conv_control != 0 else 0
+        improvement = float(((conv_treatment/conv_control)-1)*100) if conv_control != 0 else 0.0
+        
+        # Garantir que todos os valores são tipos Python nativos
+        significant = bool(p_value < alpha)
         
         return {
-            "z_statistic": round(z_stat, 4),
-            "p_value": round(p_value, 6),
-            "significant": p_value < alpha,
-            "confidence_interval": [round(ic_inferior, 6), round(ic_superior, 6)],
-            "conversion_improvement": round(improvement, 2),
+            "z_statistic": float(round(z_stat, 4)),
+            "p_value": float(round(p_value, 6)),
+            "significant": significant,
+            "confidence_interval": [float(round(ic_inferior, 6)), float(round(ic_superior, 6))],
+            "conversion_improvement": float(round(improvement, 2)),
             "recommendation": "IMPLEMENTAR" if p_value < alpha and improvement > 0 else "NÃO IMPLEMENTAR",
-            "effect_size": round(diff, 6)
+            "effect_size": float(round(diff, 6))
         }
     
     except Exception as e:
