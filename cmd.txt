@@ -1,3 +1,44 @@
+newDell
+    jonel
+        25.09.2025
+            13:45
+                git add README.md cmd.txt notebooks/teste_AB.ipynb app/ data/processed/ main.py requirements.txt
+                git commit -m " 📚 update 💄 -Formatação de código - README.md notebooks/teste_AB.ipynb and "
+                git push origin main
+
+                git branch dev_to_deploy
+                git checkout dev_deploy
+             . ../churn-prediction-unlocking-retention-secrets/.env_churn-prediction-unlocking/bin/activate
+        
+        how can i use the base of anaconda in vscode
+            Here's how to set up and use the base Anaconda environment in VS Code:
+
+            Method 1: Using the Command Palette
+                Open VS Code
+                Open your project folder
+                Open Command Palette (Ctrl+Shift+P on Windows/Linux, Cmd+Shift+P on Mac)
+                Type "Python: Select Interpreter"
+                Look for the base Anaconda environment (usually named something like):
+                Python 3.x.x ('base': conda)
+                C:\Users\YourName\anaconda3\python.exe (Windows)
+
+        24.09.2025
+            19:47, 02:43
+
+                 . ../churn-prediction-unlocking-retention-secrets/.env_churn-predictio
+n-unlocking/bin/activate
+                
+
+                jonel@DAS-IT:~/churn-prediction-unlocking-retention-secrets/.env_churn-prediction-unlocking$ . bin/activate 
+                cd /home/jonel/Teste-A-B
+
+                git add README.md notebooks/teste_AB.ipynb data/  &&\ 
+                git commit -m " 24.09, 17:25 update README.md notebooks/teste_AB.ipynb and add data/ " &&\ 
+                git push origin main
+
+
+                
+
 14.04.2025
     git add . && git commit -m " remove duplicate struture of folder in README.md " && git push origin main
     git add . && git commit -m " update 🔧 Pré-requisitos in README.md " && git push origin main

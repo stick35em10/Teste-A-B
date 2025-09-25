@@ -12,6 +12,7 @@ H₁ (Hipótese Alternativa): A nova página aumenta a taxa de conversão.
 
 # 🧮 Passo 2: Design do Experimento
 📈 Parâmetros Estatísticos
+
 Nível de confiança: 95% (confidence_level = 0.95)
 
 Nível de significância: 5% (significance_level = 0.05)
@@ -21,7 +22,7 @@ Poder estatístico: 80% (power = 0.80)
 Efeito mínimo detectável (MDE): 2% (de 13% para 15%)
 
 ## 👥 Tamanho da Amostra
-Foi calculado usando statsmodels.stats.power.NormalIndPower:
+Foi calculado usando ** statsmodels.stats.power.NormalIndPower: **
 
 python
 effect_size = proportion_effectsize(0.13, 0.15)
@@ -48,6 +49,7 @@ Grupo de tratamento: 4.720 usuários com new_page
 
 # 📉 Passo 4: Testando as Hipóteses
 📊 Taxas de Conversão
+
 Grupo de controle (old_page): 11,55%
 
 Grupo de tratamento (new_page): 12,90%
@@ -61,7 +63,8 @@ Poder = 0,80
 
 # 💰 Passo 5: Conclusões e Considerações Financeiras
 ## ✅ Resultado
-A nova página apresentou uma taxa de conversão maior (12,90% vs 11,55%). A diferença é estatisticamente significativa ao nível de 5%.
+A nova página apresentou uma taxa de conversão maior (12,90% vs 11,55%). 
+A diferença é estatisticamente significativa ao nível de 5%.
 
 ## 💡 Impacto Financeiro
 ### Suponha que:
