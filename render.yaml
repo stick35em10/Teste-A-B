@@ -45,10 +45,6 @@ services:
     
     # Escalabilidade
     numInstances: 1
-    disk:
-      name: data
-      mountPath: /opt/render/project/src/data
-      sizeGB: 1
 
   # 📊 Serviço de Background (Processamento de Dados)
   - type: worker
@@ -66,18 +62,6 @@ services:
         value: 3.9.0
       - key: WORKER_TYPE
         value: data_processing
-    
-    # Agendamento (opcional)
-    # schedule: "0 */6 * * *"  # Executa a cada 6 horas
-
-  # 🗃️ Banco de Dados PostgreSQL (Opcional)
-  - type: pgsql
-    name: teste-ab-db
-    plan: free
-    region: ohio
-    ipAllowList: []
-    databaseName: teste_ab
-    user: teste_ab_user
 
   # 📈 Serviço de Redis (Cache)
   - type: redis
