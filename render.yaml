@@ -101,4 +101,3 @@ hooks:
   postBuild:
     - echo "✅ Build concluído com sucesso!"
     - echo "📊 Versões instaladas:"
-    - python -c "import pandas as pd; print(f'Pandas: {pd.__version__}')"
