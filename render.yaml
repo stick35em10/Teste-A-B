@@ -1,6 +1,6 @@
 # Render Configuration File
 # Deploy: Teste A/B - Análise Estatística
-# Platform: Web Service + Cron Jobs
+# Platform: Web Service
 
 version: '1'
 
@@ -11,27 +11,20 @@ services:
     env: python
     plan: free
     region: ohio
-    branch: dev_to_deploy #main
+    branch: dev_to_deploy
     
     # Configurações do Build
     buildCommand: |
       pip install -r requirements.txt
       python -c "import nltk; nltk.download('punkt')"
       
-    # Comando de Inicialização
-    startCommand: |
-      if [ -f "app.py" ]; then
-        gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
-      elif [ -f "main.py" ]; then
-        gunicorn main:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
-      else
-        streamlit run streamlit_app.py --server.port $PORT --server.address 0.0.0.0
-      fi
+    # Comando de Inicialização (Simplificado)
+    startCommand: python app.py
     
     # Variáveis de Ambiente
     envVars:
       - key: PYTHON_VERSION
-        value: 3.9.0
+        value: 3.11.0  # Updated to newer version
       - key: ENVIRONMENT
         value: production
       - key: DEBUG
@@ -39,31 +32,11 @@ services:
       - key: SECRET_KEY
         generateValue: true
     
-    # Health Check
-    healthCheckPath: /health
+    # Health Check (Removido se não existir a rota)
+    # healthCheckPath: /health
     autoDeploy: true
-    
-    # Escalabilidade
-    numInstances: 1
 
-  # 📊 Serviço de Background (Processamento de Dados)
-  - type: worker
-    name: teste-ab-worker
-    env: python
-    plan: free
-    region: ohio
-    branch: main
-    
-    buildCommand: pip install -r requirements.txt
-    startCommand: python worker.py
-    
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.9.0
-      - key: WORKER_TYPE
-        value: data_processing
-
-  # 📈 Serviço de Redis (Cache)
+  # 📈 Serviço de Redis (Cache) - Opcional
   - type: redis
     name: teste-ab-cache
     plan: free
