@@ -14,11 +14,10 @@ services:
     branch: dev_to_deploy
     
     # Configurações do Build
-    buildCommand: |
-      pip install -r requirements.txt
+    buildCommand: pip install -r requirements.txt
       
     # Comando de Inicialização (Simplificado)
-    startCommand: python app.py
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --timeout 120 #python app.py
     
     # Variáveis de Ambiente
     envVars:
@@ -30,6 +29,8 @@ services:
         value: false
       - key: SECRET_KEY
         generateValue: true
+      - key: PYTHONUNBUFFERED
+        value: true
     
     # Health Check (Removido se não existir a rota)
     # healthCheckPath: /health
@@ -42,3 +43,8 @@ services:
     region: ohio
     ipAllowList: []
     maxmemoryPolicy: allkeys-lru
+  
+    # Otimizações para free tier
+    healthCheckPath: /health
+    healthCheckTimeout: 30
+    autoDeploy: true

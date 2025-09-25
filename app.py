@@ -21,14 +21,45 @@ class NumpyEncoder(json.JSONEncoder):
 
 app.json_encoder = NumpyEncoder
 
+@app.route('/ping')
+def ping():
+    return jsonify({"status": "pong", "message": "Service is alive"})
+
+@app.route('/keep-alive')
+def keep_alive():
+    return jsonify({"status": "active", "timestamp": datetime.now().isoformat()})
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
 @app.route('/health')
 def health_check():
-    return jsonify({"status": "healthy", "service": "teste-ab-api"})
+    return jsonify({
+        "status": "healthy", 
+        "service": "teste-ab-api",
+        "timestamp": datetime.now().isoformat(),
+        "version": "1.0.0"
+        })
 
+def keep_alive_thread():
+    """Thread para manter o serviço ativo"""
+    while True:
+        try:
+            # Faz uma requisição para si mesmo a cada 10 minutos
+            requests.get('https://teste-ab-dashboard.onrender.com/health', timeout=10)
+            time.sleep(600)  # 10 minutos
+        except:
+            time.sleep(60)
+
+# Iniciar thread quando o app iniciar
+@app.before_first_request
+def activate_keep_alive():
+    if not app.debug:  # Só em produção
+        thread = Thread(target=keep_alive_thread)
+        thread.daemon = True
+        thread.start()
+        
 @app.route('/api/analyze', methods=['POST'])
 def analyze_ab_test():
     """
