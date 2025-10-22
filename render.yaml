@@ -45,6 +45,6 @@ services:
     maxmemoryPolicy: allkeys-lru
   
     # Otimizações para free tier
-    healthCheckPath: /health
-    healthCheckTimeout: 30
-    autoDeploy: true
+    # healthCheckPath: /health
+    # healthCheckTimeout: 30
+    # autoDeploy: true
