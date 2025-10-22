@@ -36,13 +36,14 @@ services:
     # healthCheckPath: /health
     autoDeploy: true
 
+  # cannot have more than 1 free tier Redis instance
   # 📈 Serviço de Redis (Cache) - Opcional
-  - type: redis
-    name: teste-ab-cache
-    plan: free
-    region: ohio
-    ipAllowList: []
-    maxmemoryPolicy: allkeys-lru
+  #- type: redis
+  #  name: teste-ab-cache
+  #  plan: free
+  #  region: ohio
+  #  ipAllowList: []
+  #  maxmemoryPolicy: allkeys-lru
   
     # Otimizações para free tier
     # healthCheckPath: /health
